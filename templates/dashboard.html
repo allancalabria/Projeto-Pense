@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Dashboard - Trabalhos Submetidos</h1>
+        <!-- Botão para navegar até o formulário de envio -->
+        <a href="{{ url_for('form') }}" class="btn btn-primary">Submeter Novo Trabalho</a>
+    </div>
+
+    <div class="row">
+        <!-- Requisito do Jinja2: Verifica se a lista de trabalhos está vazia -->
+        {% if not trabalhos %}
+            <div class="col-12 text-center my-5">
+                <p class="fs-4 text-muted">Nenhum trabalho submetido ainda. Seja o primeiro!</p>
+            </div>
+        {% else %}
+            <!-- Requisito do Jinja2: Percorre a lista e exibe cada trabalho dinamicamente -->
+            {% for trabalho in trabalhos %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <!-- Badge com a Modalidade (Ensino, Pesquisa ou Extensão) -->
+                            <span class="badge bg-secondary mb-2">{{ trabalho.modalidade }}</span>
+                            
+                            <!-- Título, Autor e Instituição conforme solicitado -->
+                            <h5 class="card-title text-primary">{{ trabalho.titulo }}</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">Autor: {{ trabalho.autor }}</h6>
+                            <p class="card-text small text-secondary"><strong>Instituição:</strong> {{ trabalho.instituicao }}</p>
+                            
+                            <hr>
+                            <p class="card-text text-truncate-3">{{ trabalho.resumo }}</p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
