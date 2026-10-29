@@ -1,0 +1,40 @@
+body{
+    min-height: 100dvh;
+    position: relative;
+    background-color: white!important;
+}
+
+.image-wrapper {
+    position: fixed;
+    height: 100%;
+    width: min-content;
+    left: 50%;
+    transform: translateX(-50%);
+    clip-path: circle();
+    filter: grayscale() invert();
+    z-index: -10;
+    animation: inverter 2s ease infinite alternate;
+}
+
+.image {
+    animation: rodar 2s linear infinite;
+    height: 100%;
+}
+
+@keyframes inverter {
+    from {
+        opacity: 30%;
+    }
+    to {
+        opacity: 0%;
+    }
+}
+
+@keyframes rodar {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
