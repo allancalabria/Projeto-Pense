@@ -1,13 +1,10 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
-import models
-
-m1 = models.Trabalho("Jurassic Park", "Machado de Assis", "Aventura")
-m2 = models.Trabalho("Água da Pedra", "Arnold Shwazneeger", "Aventura")
-m3 = models.Trabalho("Mundo dos macacos", "José Lins do Rego", "Simulador")
-m4 = models.Trabalho("Automobilista", "Max Verstappen", "Corrida")
+import os
+from dotenv import load_dotenv
 
 app = Flask(__name__)
-app.secret_key = "chave_secreta_para_o_flash_funcionar"
+load_dotenv()
+app.secret_key = os.getenv("secret_key")
 
 # Lista global temporária (simulação de banco de dados na memória do servidor)
 # Já iniciada com um exemplo para fins de testes no seu Dashboard
