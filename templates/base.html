@@ -2,28 +2,60 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ titulo | default("Página Inicial") }}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/iconoir-icons/iconoir@main/css/iconoir.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Xmind:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style type="text/tailwindcss">
+      @theme {
+        --font-sans: 'Xmind', sans-serif;
+
+        --color-brand: var(--color-blue-500);
+        --color-brand-hover: var(--color-blue-600);
+        --color-on-brand: var(--color-white);
+
+        --color-error: var(--color-red-600);
+        --color-on-error: var(--color-white);
+        --color-error-container: var(--color-red-50);
+        --color-on-error-container: var(--color-red-800);
+
+        --color-surface: var(--color-white);
+        --color-on-surface: var(--color-slate-950);
+        --color-on-surface-variant: var(--color-slate-700);
+
+        --color-surface-container: var(--color-slate-100);
+        --color-surface-container-high: var(--color-slate-200);
+
+        --color-inverse-surface: var(--color-slate-900);
+        --color-inverse-on-surface: var(--color-slate-50);
+        --color-inverse-on-surface-hover: var(--color-slate-200);
+
+        --color-outline: var(--color-slate-700);
+        --color-outline-variant: var(--color-slate-200);
+      }
+    </style>
 </head>
 <body>
     <div class="image-wrapper">
         <img src="../static/img/spyvsspy.webp" class="image" alt="">
     </div>
-    <main class="container mt-4">
+    <main class="flex flex-col text-on-surface bg-surface-container min-h-[100dvh]">
          {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
 
         {% block content %}{% endblock %}
     </main>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

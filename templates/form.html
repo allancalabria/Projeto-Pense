@@ -1,53 +1,143 @@
 {% extends 'base.html' %}
+
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-8">
-        <div class="card shadow-sm p-4">
-            <h2 class="mb-4 text-center">Submissão de Trabalho - PEnsE-Submite</h2>
-            
-            <!-- O formulário envia os dados via POST para a rota do Flask -->
-            <form action="{{ url_for('form') }}" method="POST">
+<div class="grid">
+    <!-- Barra Superior / Header consistente com o Dashboard -->
+    <div class="flex w-fit gap-5 justify-between items-center my-6 mx-auto rounded-full p-3 pl-6 bg-inverse-surface text-inverse-on-surface">
+        <div class="flex items-center gap-3">
+            <i class="iconoir-graduation-cap text-3xl"></i>
+            <h1 class="text-lg font-medium hidden md:inline">PEnsE Trabalhos Acadêmicos</h1>
+        </div>
+        <!-- Botão para voltar à listagem de trabalhos -->
+        <a href="{{ url_for('dashboard') }}" class="bg-inverse-on-surface hover:bg-inverse-on-surface-hover text-inverse-surface py-2 pl-5 pr-6 rounded-full flex items-center gap-2">
+            <i class="iconoir-arrow-left text-lg"></i>
+            Voltar ao início
+        </a>
+    </div>
+
+    <!-- Container do Formulário -->
+    <div class="max-w-3xl mx-auto w-full px-6 mb-12">
+        <div class="flex flex-col p-6 sm:p-8 md:p-10 rounded-4xl bg-surface">
+            <!-- Cabeçalho do Card -->
+            <div class="mb-4">
+                <span class="block w-fit bg-surface-container text-on-surface py-1 px-3 rounded-full mb-3">Submissão</span>
+                <h2 class="text-2xl md:text-3xl text-on-surface font-medium">Cadastrar Trabalho</h2>
+                <p class="text-on-surface-variant text-sm mt-1">Preencha os campos abaixo para submeter o resumo acadêmico à mostra de trabalhos.</p>
+            </div>
+
+            <hr class="text-outline-variant my-4">
+
+            <!-- Formulário enviando via POST para a rota Flask -->
+            <form action="{{ url_for('form') }}" method="POST" class="flex flex-col gap-5">
                 
                 <!-- Título do Trabalho -->
-                <div class="mb-3">
-                    <label for="titulo" class="form-label">Título do Trabalho</label>
-                    <input type="text" class="form-control" id="titulo" name="titulo" placeholder="Digite o título do seu trabalho" required>
+                <div class="flex flex-col gap-2">
+                    <label for="titulo" class="text-sm font-medium text-on-surface flex items-center gap-2">
+                        <i class="iconoir-notes text-on-surface-variant"></i>
+                        Título do Trabalho
+                    </label>
+                    <input 
+                        type="text" 
+                        id="titulo" 
+                        name="titulo" 
+                        placeholder="Ex: Desenvolvimento de Aplicações Web Modernas" 
+                        required
+                        class="w-full px-4 py-3 bg-surface-container hover:bg-surface-container-high/60 focus:bg-surface border border-transparent focus:border-outline-variant rounded-2xl text-on-surface outline-none transition-all placeholder:text-on-surface-variant/50 text-sm focus:ring-2 focus:ring-inverse-surface/10"
+                    >
                 </div>
 
-                <!-- Nome do Autor -->
-                <div class="mb-3">
-                    <label for="autor" class="form-label">Nome do Autor</label>
-                    <input type="text" class="form-control" id="autor" name="autor" placeholder="Nome completo do autor principal" required>
+                <div class="grid sm:grid-cols-2 gap-5">
+                    <!-- Nome do Autor -->
+                    <div class="flex flex-col gap-2">
+                        <label for="autor" class="text-sm font-medium text-on-surface flex items-center gap-2">
+                            <i class="iconoir-group text-on-surface-variant"></i>
+                            Nome do Autor
+                        </label>
+                        <input 
+                            type="text" 
+                            id="autor" 
+                            name="autor" 
+                            placeholder="Nome completo do autor principal" 
+                            required
+                            class="w-full px-4 py-3 bg-surface-container hover:bg-surface-container-high/60 focus:bg-surface border border-transparent focus:border-outline-variant rounded-2xl text-on-surface outline-none transition-all placeholder:text-on-surface-variant/50 text-sm focus:ring-2 focus:ring-inverse-surface/10"
+                        >
+                    </div>
+
+                    <!-- Campus / Instituição -->
+                    <div class="flex flex-col gap-2">
+                        <label for="instituicao" class="text-sm font-medium text-on-surface flex items-center gap-2">
+                            <i class="iconoir-building text-on-surface-variant"></i>
+                            Campus / Instituição
+                        </label>
+                        <input 
+                            type="text" 
+                            id="instituicao" 
+                            name="instituicao" 
+                            placeholder="Ex: IFRS - Campus Farroupilha" 
+                            required
+                            class="w-full px-4 py-3 bg-surface-container hover:bg-surface-container-high/60 focus:bg-surface border border-transparent focus:border-outline-variant rounded-2xl text-on-surface outline-none transition-all placeholder:text-on-surface-variant/50 text-sm focus:ring-2 focus:ring-inverse-surface/10"
+                        >
+                    </div>
                 </div>
 
-                <!-- Campus/Instituição -->
-                <div class="mb-3">
-                    <label for="instituicao" class="form-label">Campus / Instituição</label>
-                    <input type="text" class="form-control" id="instituicao" name="instituicao" placeholder="Ex: IFRS - Campus Farroupilha" required>
-                </div>
-
-                <!-- Modalidade (Opções de escolha) -->
-                <div class="mb-3">
-                    <label for="modalidade" class="form-label">Modalidade</label>
-                    <select class="form-select" id="modalidade" name="modalidade" required>
-                        <option value="" selected disabled>Selecione uma modalidade...</option>
-                        <option value="Ensino">Ensino</option>
-                        <option value="Pesquisa">Pesquisa</option>
-                        <option value="Extensão">Extensão</option>
-                    </select>
+                <!-- Modalidade -->
+                <div class="flex flex-col gap-2">
+                    <label for="modalidade" class="text-sm font-medium text-on-surface flex items-center gap-2">
+                        <i class="iconoir-bookmark-book text-on-surface-variant"></i>
+                        Modalidade
+                    </label>
+                    <div class="relative">
+                        <select 
+                            id="modalidade" 
+                            name="modalidade" 
+                            required
+                            class="w-full appearance-none px-4 py-3 bg-surface-container hover:bg-surface-container-high/60 focus:bg-surface border border-transparent focus:border-outline-variant rounded-2xl text-on-surface outline-none transition-all text-sm cursor-pointer focus:ring-2 focus:ring-inverse-surface/10"
+                        >
+                            <option value="" disabled selected>Selecione uma modalidade...</option>
+                            <option value="Ensino">Ensino</option>
+                            <option value="Pesquisa">Pesquisa</option>
+                            <option value="Extensão">Extensão</option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-on-surface-variant">
+                            <i class="iconoir-nav-arrow-down text-lg"></i>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Resumo -->
-                <div class="mb-3">
-                    <label for="resumo" class="form-label">Resumo</label>
-                    <textarea class="form-control" id="resumo" name="resumo" rows="5" placeholder="Digite o resumo acadêmico do seu trabalho..." required></textarea>
-                    <div id="resumoHelp" class="form-text">Breve descrição contendo objetivos, metodologia e resultados.</div>
+                <div class="flex flex-col gap-2">
+                    <div class="flex items-center justify-between">
+                        <label for="resumo" class="text-sm font-medium text-on-surface flex items-center gap-2">
+                            <i class="iconoir-page text-on-surface-variant"></i>
+                            Resumo
+                        </label>
+                        <span class="text-xs text-on-surface-variant">Objetivos, metodologia e resultados</span>
+                    </div>
+                    <textarea 
+                        id="resumo" 
+                        name="resumo" 
+                        rows="5" 
+                        placeholder="Digite o resumo acadêmico do seu trabalho..." 
+                        required
+                        class="w-full px-4 py-3 bg-surface-container hover:bg-surface-container-high/60 focus:bg-surface border border-transparent focus:border-outline-variant rounded-2xl text-on-surface outline-none transition-all placeholder:text-on-surface-variant/50 text-sm resize-y focus:ring-2 focus:ring-inverse-surface/10"
+                    ></textarea>
                 </div>
 
                 <!-- Botões de Ação -->
-                <div class="d-flex justify-content-between align-items-center mt-4">
-                    <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary">Cancelar</a>
-                    <button type="submit" class="btn btn-primary px-4">Enviar Trabalho</button>
+                <div class="flex flex-col-reverse sm:flex-row justify-between items-center gap-4 mt-4 pt-4 border-t border-outline-variant">
+                    <a 
+                        href="{{ url_for('dashboard') }}" 
+                        class="w-full sm:w-auto px-6 py-2.5 rounded-full border border-outline-variant hover:bg-surface-container text-on-surface-variant hover:text-on-surface text-sm font-medium flex items-center justify-center gap-2 transition-colors"
+                    >
+                        Cancelar
+                    </a>
+                    <button 
+                        type="submit" 
+                        class="w-full sm:w-auto bg-brand hover:bg-brand-hover text-inverse-on-surface pl-6 pr-5 py-2.5 rounded-full flex items-center justify-center gap-2 text-sm font-medium transition-colors cursor-pointer"
+                    >
+                        Enviar Trabalho
+                        <i class="iconoir-send text-base"></i>
+                    </button>
                 </div>
 
             </form>

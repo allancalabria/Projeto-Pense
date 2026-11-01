@@ -1,39 +1,51 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>Dashboard - Trabalhos Submetidos</h1>
+<div class="grid">
+    <div class="flex w-fit gap-5 justify-between items-center my-6 mx-auto rounded-full p-3 pl-6 bg-inverse-surface text-inverse-on-surface">
+        <div class="flex items-center gap-3">
+            <i class="iconoir-graduation-cap text-3xl"></i>
+            <h1 class="text-lg font-medium hidden md:inline">PEnsE Trabalhos Acadêmicos</h1>
+        </div>
         <!-- Botão para navegar até o formulário de envio -->
-        <a href="{{ url_for('form') }}" class="btn btn-primary">Submeter Novo Trabalho</a>
+        <a href="{{ url_for('form') }}" class="bg-inverse-on-surface hover:bg-inverse-on-surface-hover text-inverse-surface py-2 pl-5 pr-6 rounded-full flex items-center gap-2">
+            <i class="iconoir-plus text-lg"></i>
+            Cadastrar trabalho
+        </a>
     </div>
 
-    <div class="row">
+    <div class="px-6 mb-8">
         <!-- Requisito do Jinja2: Verifica se a lista de trabalhos está vazia -->
         {% if not trabalhos %}
-            <div class="col-12 text-center my-5">
-                <p class="fs-4 text-muted">Nenhum trabalho submetido ainda. Seja o primeiro!</p>
+            <div class=" text-center mx-auto py-10 rounded-lg border border-dashed border-outline-variant">
+                <i class="iconoir-square-dashed text-3xl"></i>
+                <h3 class="text-lg text-on-surface font-bold">Nenhum trabalho cadastrado ainda.</h3>
+                <p class="text-muted text-on-surface-variant">Seja o primeiro!</p>
             </div>
         {% else %}
             <!-- Requisito do Jinja2: Percorre a lista e exibe cada trabalho dinamicamente -->
-            {% for trabalho in trabalhos %}
-                <div class="col-md-6 col-lg-4 mb-4">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body">
+            <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {% for trabalho in trabalhos %}
+                    <div class="flex flex-col p-6 rounded-4xl bg-surface">
                             <!-- Badge com a Modalidade (Ensino, Pesquisa ou Extensão) -->
-                            <span class="badge bg-secondary mb-2">{{ trabalho.modalidade }}</span>
+                            <span class="block w-fit bg-surface-container text-on-surface py-1 px-3 rounded-full mb-2">{{ trabalho.modalidade }}</span>
                             
                             <!-- Título, Autor e Instituição conforme solicitado -->
-                            <h5 class="card-title text-primary">{{ trabalho.titulo }}</h5>
-                            <h6 class="card-subtitle mb-2 text-muted">Autor: {{ trabalho.autor }}</h6>
-                            <p class="card-text small text-secondary"><strong>Instituição:</strong> {{ trabalho.instituicao }}</p>
+                            <h5 class="text-2xl text-on-surface text-balance mb-3">{{ trabalho.titulo }}</h5>
+                            <p class="mb-1 text-muted text-sm flex gap-2 items-center">
+                                <i class="iconoir-group text-on-surface-variant"></i>
+                                {{ trabalho.autor }}
+                            </p>
+                            <p class="mb-1 text-muted text-sm flex gap-2 items-center">
+                                <i class="iconoir-building text-on-surface-variant"></i>
+                                {{ trabalho.instituicao }}
+                            </p>
                             
-                            <hr>
-                            <p class="card-text text-truncate-3">{{ trabalho.resumo }}</p>
-                        </div>
+                            <hr class="text-outline-variant my-3">
+                            <p class="text-on-surface-variant text-balance line-clamp-3">{{ trabalho.resumo }}</p>
                     </div>
-                </div>
-            {% endfor %}
+                {% endfor %}
+            </div>
         {% endif %}
     </div>
 </div>
