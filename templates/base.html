@@ -40,8 +40,32 @@
     </style>
 </head>
 <body>
-    <div class="image-wrapper">
-        <img src="../static/img/spyvsspy.webp" class="image" alt="">
+    <div class="game-wrapper" id="gameWrapper" data-sprite-path="{{ url_for('static', filename='img/sprites/') }}">
+        <div class="absolute pointer-events-auto -bottom-18 hover:bottom-0 pb-4 m-4 mb-0 right-0 z-[1000] transition-all" id="charSelect">
+            <div class="flex gap-2 p-2 rounded-2xl bg-inverse-surface text-inverse-on-surface items-center shadow-lg">
+                <div class="flex flex-col items-center">
+                    <img class="w-10 h-10 [image-rendering:pixelated] p-2 rounded-lg bg-inverse-on-surface/10 hover:bg-brand cursor-pointer transition-all active:scale-95" src="{{ url_for('static', filename='img/sprites/profile-b.png') }}" id="charBlack" alt="Black" title="Piloto Black">
+                    <span class="text-[11px] font-mono font-bold leading-tight select-none pt-0.5" id="scoreBlack">0</span>
+                </div>
+                <div class="flex flex-col items-center">
+                    <img class="w-10 h-10 [image-rendering:pixelated] p-2 rounded-lg bg-inverse-on-surface/10 hover:bg-brand cursor-pointer transition-all active:scale-95" src="{{ url_for('static', filename='img/sprites/profile-w.png') }}" id="charWhite" alt="White" title="Piloto White">
+                    <span class="text-[11px] font-mono font-bold leading-tight select-none pt-0.5" id="scoreWhite">0</span>
+                </div>
+            </div>
+        </div>
+        <!-- Atores do jogo com suporte a animação de spritesheet -->
+        <div class="sprite-box game-actor" id="target">
+            <img class="sprite-sheet" src="{{ url_for('static', filename='img/sprites/front-b.png') }}" id="targetImg" alt="Alvo">
+        </div>
+        <div class="sprite-box game-actor" id="player">
+            <img class="sprite-sheet" src="{{ url_for('static', filename='img/sprites/plane-w.png') }}" id="playerImg" alt="Avião">
+        </div>
+        <div class="sprite-box game-actor" id="bomb">
+            <img class="sprite-sheet" src="{{ url_for('static', filename='img/sprites/bomb.png') }}" id="bombImg" alt="Bomba">
+        </div>
+        <div class="sprite-box game-actor" id="explosion">
+            <img class="sprite-sheet" src="{{ url_for('static', filename='img/sprites/explosion.png') }}" id="explosionImg" alt="Explosão">
+        </div>
     </div>
     <main class="flex flex-col text-on-surface bg-surface-container min-h-[100dvh]">
          {% with messages = get_flashed_messages(with_categories=true) %}
@@ -57,5 +81,6 @@
 
         {% block content %}{% endblock %}
     </main>
+    <script type="module" src="{{ url_for('static', filename='js/game/main.js') }}"></script>
 </body>
 </html>
