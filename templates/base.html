@@ -41,7 +41,7 @@
 </head>
 <body>
     <div class="game-wrapper" id="gameWrapper" data-sprite-path="{{ url_for('static', filename='img/sprites/') }}">
-        <div class="absolute pointer-events-auto -bottom-18 hover:bottom-0 pb-4 m-4 mb-0 right-0 z-[1000] transition-all" id="charSelect">
+        <div class="absolute pointer-events-auto -bottom-15 hover:bottom-0 pb-4 m-4 mb-0 right-0 z-[1000] transition-all" id="charSelect">
             <div class="flex gap-2 p-2 rounded-2xl bg-inverse-surface text-inverse-on-surface items-center shadow-lg">
                 <div class="flex flex-col items-center">
                     <img class="w-10 h-10 [image-rendering:pixelated] p-2 rounded-lg bg-inverse-on-surface/10 hover:bg-brand cursor-pointer transition-all active:scale-95" src="{{ url_for('static', filename='img/sprites/profile-b.png') }}" id="charBlack" alt="Black" title="Piloto Black">
@@ -68,14 +68,33 @@
         </div>
     </div>
     <main class="flex flex-col text-on-surface bg-surface-container min-h-[100dvh]">
-         {% with messages = get_flashed_messages(with_categories=true) %}
+        {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert-{{ category }} alert-dismissible fade show" role="alert">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                {% endfor %}
+                <div class="w-full max-w-md m-4 flex flex-col gap-3 fixed bottom-0 left-0 z-100">
+                    {% for category, message in messages %}
+                        <div class="flex items-center justify-between gap-3 p-4 rounded-2xl border text-sm transition-all duration-200 
+                                bg-inverse-surface border-inverse-on-surface/20 text-inverse-on-surface" role="alert">
+                            <div class="flex items-center gap-3">
+                                {% if category in ['danger', 'error'] %}
+                                    <i class="iconoir-warning-triangle text-xl text-red-300 shrink-0"></i>
+                                {% elif category == 'success' %}
+                                    <i class="iconoir-check-circle text-xl text-emerald-300 shrink-0"></i>
+                                {% elif category == 'warning' %}
+                                    <i class="iconoir-warning-circle text-xl text-yellow-300 shrink-0"></i>
+                                {% else %}
+                                    <i class="iconoir-info-circle text-xl shrink-0"></i>
+                                {% endif %}
+                                <span>{{ message }}</span>
+                            </div>
+                            <button type="button" 
+                                onclick="const alert = this.closest('.flash-alert'); alert.classList.add('opacity-0', 'scale-95'); setTimeout(() => alert.remove(), 200);" 
+                                class="p-1 rounded-xl hover:bg-black/5 transition-colors opacity-70 hover:opacity-100 cursor-pointer shrink-0" 
+                                aria-label="Fechar">
+                                <i class="iconoir-xmark text-lg"></i>
+                            </button>
+                        </div>
+                    {% endfor %}
+                </div>
             {% endif %}
         {% endwith %}
 

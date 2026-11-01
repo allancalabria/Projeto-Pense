@@ -50,13 +50,13 @@ def form():
             trabalhos.append(novo_trabalho)
             
             # Mensagem de sucesso (opcional, mas boa prática)
-            flash("Trabalho submetido com sucesso!", "success")
+            flash("Trabalho cadastrado com sucesso!", "success")
             
             # 4. Redireciona o usuário imediatamente para a página inicial (Dashboard)
             return redirect(url_for('dashboard'))
         
         # Caso falte algum campo, exibe erro e recarrega o formulário
-        flash("Erro: Preencha todos os campos obrigatórios!", "danger")
+        flash("Preencha todos os campos obrigatórios!", "danger")
         return redirect(url_for('form'))    
         
     # Se o método for GET, apenas exibe a página do formulário
