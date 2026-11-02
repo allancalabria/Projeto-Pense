@@ -72,7 +72,7 @@
             {% if messages %}
                 <div class="w-full max-w-md m-4 flex flex-col gap-3 fixed bottom-0 left-0 z-100">
                     {% for category, message in messages %}
-                        <div class="flex items-center justify-between gap-3 p-4 rounded-2xl border text-sm transition-all duration-200 
+                        <div class="flash-alert flex items-center justify-between gap-3 p-4 rounded-2xl border text-sm transition-all duration-200 
                                 bg-inverse-surface border-inverse-on-surface/20 text-inverse-on-surface" role="alert">
                             <div class="flex items-center gap-3">
                                 {% if category in ['danger', 'error'] %}
@@ -87,8 +87,8 @@
                                 <span>{{ message }}</span>
                             </div>
                             <button type="button" 
-                                onclick="const alert = this.closest('.flash-alert'); alert.classList.add('opacity-0', 'scale-95'); setTimeout(() => alert.remove(), 200);" 
-                                class="p-1 rounded-xl hover:bg-black/5 transition-colors opacity-70 hover:opacity-100 cursor-pointer shrink-0" 
+                                onclick="const alert = this.closest('.flash-alert'); if (alert) { alert.classList.add('opacity-0', 'scale-95'); setTimeout(() => alert.remove(), 200); }" 
+                                class="p-1 rounded-xl hover:bg-inverse-on-surface/10 transition-colors opacity-70 hover:opacity-100 cursor-pointer shrink-0" 
                                 aria-label="Fechar">
                                 <i class="iconoir-xmark text-lg"></i>
                             </button>
