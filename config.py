@@ -1,10 +1,17 @@
 import os
-from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
 class Config:
-    SECRET_KEY = os.getenv("secret_key")
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL', 'sqlite:///local.db')
+    SECRET_KEY = os.getenv("SECRET_KEY") or os.getenv("secret_key") or "chave-secreta-padrao"
+    
+    # Obtém a URL do banco de dados
+    db_url = os.environ.get('DATABASE_URL', 'sqlite:///local.db')
+    
+    # O Render gera URLs iniciando com "postgres://", mas o SQLAlchemy exige "postgresql://"
+    if db_url and db_url.startswith("postgres://"):
+        db_url = db_url.replace("postgres://", "postgresql://", 1)
+        
+    SQLALCHEMY_DATABASE_URI = db_url
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 db = SQLAlchemy()
