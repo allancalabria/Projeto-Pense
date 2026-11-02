@@ -1,5 +1,8 @@
 import os
+from dotenv import load_dotenv
 from flask_sqlalchemy import SQLAlchemy
+
+load_dotenv()
 
 class Config:
     SECRET_KEY = os.getenv("SECRET_KEY") or os.getenv("secret_key") or "chave-secreta-padrao"
