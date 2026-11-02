@@ -2,25 +2,104 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ titulo | default("Página Inicial") }}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/iconoir-icons/iconoir@main/css/iconoir.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Xmind:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style type="text/tailwindcss">
+      @theme {
+        --font-sans: 'Xmind', sans-serif;
+
+        --color-brand: var(--color-blue-500);
+        --color-brand-hover: var(--color-blue-600);
+        --color-on-brand: var(--color-white);
+
+        --color-error: var(--color-red-600);
+        --color-on-error: var(--color-white);
+        --color-error-container: var(--color-red-50);
+        --color-on-error-container: var(--color-red-800);
+
+        --color-surface: var(--color-white);
+        --color-on-surface: var(--color-slate-950);
+        --color-on-surface-variant: var(--color-slate-700);
+
+        --color-surface-container: var(--color-slate-100);
+        --color-surface-container-high: var(--color-slate-200);
+
+        --color-inverse-surface: var(--color-slate-900);
+        --color-inverse-on-surface: var(--color-slate-50);
+        --color-inverse-on-surface-hover: var(--color-slate-200);
+
+        --color-outline: var(--color-slate-700);
+        --color-outline-variant: var(--color-slate-200);
+      }
+    </style>
 </head>
-<body>   
-    <main class="container mt-4">
-         {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+<body>
+    <div class="game-wrapper" id="gameWrapper" data-sprite-path="{{ url_for('static', filename='img/sprites/') }}">
+        <div class="absolute pointer-events-auto -bottom-15 hover:bottom-0 pb-4 m-4 mb-0 right-0 z-[1000] transition-all" id="charSelect">
+            <div class="flex gap-2 p-2 rounded-2xl bg-inverse-surface text-inverse-on-surface items-center shadow-lg">
+                <div class="flex flex-col items-center">
+                    <img class="w-10 h-10 [image-rendering:pixelated] p-2 rounded-lg bg-inverse-on-surface/10 hover:bg-brand cursor-pointer transition-all active:scale-95" src="{{ url_for('static', filename='img/sprites/profile-b.png') }}" id="charBlack" alt="Black" title="Piloto Black">
+                    <span class="text-[11px] font-mono font-bold leading-tight select-none pt-0.5" id="scoreBlack">0</span>
                 </div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
+                <div class="flex flex-col items-center">
+                    <img class="w-10 h-10 [image-rendering:pixelated] p-2 rounded-lg bg-inverse-on-surface/10 hover:bg-brand cursor-pointer transition-all active:scale-95" src="{{ url_for('static', filename='img/sprites/profile-w.png') }}" id="charWhite" alt="White" title="Piloto White">
+                    <span class="text-[11px] font-mono font-bold leading-tight select-none pt-0.5" id="scoreWhite">0</span>
+                </div>
+            </div>
+        </div>
+        <!-- Atores do jogo com suporte a animação de spritesheet -->
+        <div class="sprite-box game-actor" id="target">
+            <img class="sprite-sheet" src="{{ url_for('static', filename='img/sprites/front-b.png') }}" id="targetImg" alt="Alvo">
+        </div>
+        <div class="sprite-box game-actor" id="player">
+            <img class="sprite-sheet" src="{{ url_for('static', filename='img/sprites/plane-w.png') }}" id="playerImg" alt="Avião">
+        </div>
+        <div class="sprite-box game-actor" id="bomb">
+            <img class="sprite-sheet" src="{{ url_for('static', filename='img/sprites/bomb.png') }}" id="bombImg" alt="Bomba">
+        </div>
+        <div class="sprite-box game-actor" id="explosion">
+            <img class="sprite-sheet" src="{{ url_for('static', filename='img/sprites/explosion.png') }}" id="explosionImg" alt="Explosão">
+        </div>
+    </div>
+    <main class="flex flex-col text-on-surface bg-surface-container min-h-[100dvh]">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="w-full max-w-md m-4 flex flex-col gap-3 fixed bottom-0 left-0 z-100">
+                    {% for category, message in messages %}
+                        <div class="flex items-center justify-between gap-3 p-4 rounded-2xl border text-sm transition-all duration-200 
+                                bg-inverse-surface border-inverse-on-surface/20 text-inverse-on-surface" role="alert">
+                            <div class="flex items-center gap-3">
+                                {% if category in ['danger', 'error'] %}
+                                    <i class="iconoir-warning-triangle text-xl text-red-300 shrink-0"></i>
+                                {% elif category == 'success' %}
+                                    <i class="iconoir-check-circle text-xl text-emerald-300 shrink-0"></i>
+                                {% elif category == 'warning' %}
+                                    <i class="iconoir-warning-circle text-xl text-yellow-300 shrink-0"></i>
+                                {% else %}
+                                    <i class="iconoir-info-circle text-xl shrink-0"></i>
+                                {% endif %}
+                                <span>{{ message }}</span>
+                            </div>
+                            <button type="button" 
+                                onclick="const alert = this.closest('.flash-alert'); alert.classList.add('opacity-0', 'scale-95'); setTimeout(() => alert.remove(), 200);" 
+                                class="p-1 rounded-xl hover:bg-black/5 transition-colors opacity-70 hover:opacity-100 cursor-pointer shrink-0" 
+                                aria-label="Fechar">
+                                <i class="iconoir-xmark text-lg"></i>
+                            </button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
 
         {% block content %}{% endblock %}
     </main>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="module" src="{{ url_for('static', filename='js/game/main.js') }}"></script>
 </body>
 </html>

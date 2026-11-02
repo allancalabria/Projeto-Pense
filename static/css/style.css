@@ -1,0 +1,75 @@
+body {
+    min-height: 100dvh;
+    position: relative;
+    background-color: white !important;
+}
+
+/* Área do minigame (cobre toda a tela sem bloquear a interface quando ocioso) */
+.game-wrapper {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 999;
+    overflow: hidden;
+}
+
+/* Quando o jogo está ativo, cliques em qualquer parte da tela soltam a bomba */
+.game-wrapper.playing {
+    pointer-events: auto;
+    cursor: crosshair;
+}
+
+/* Configuração dos Sprites e Animação de Folhas (Spritesheet) */
+.sprite-box {
+    position: absolute;
+    overflow: hidden;
+    user-select: none;
+    -webkit-user-drag: none;
+    pointer-events: none;
+}
+
+.sprite-sheet {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: auto;
+    max-width: none;
+    image-rendering: pixelated;
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+.sprite {
+    image-rendering: pixelated;
+    position: absolute;
+    user-select: none;
+    -webkit-user-drag: none;
+    pointer-events: none;
+}
+
+.game-actor {
+    display: none;
+}
+
+#player {
+    z-index: 1010;
+    transform-origin: center center;
+}
+
+#target {
+    bottom: 0;
+    z-index: 1005;
+}
+
+#bomb {
+    z-index: 1008;
+    transform-origin: center center;
+}
+
+#explosion {
+    z-index: 1012;
+}
