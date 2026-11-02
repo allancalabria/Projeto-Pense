@@ -32,14 +32,18 @@
                 
                 <!-- Título do Trabalho -->
                 <div class="flex flex-col gap-2">
-                    <label for="titulo" class="text-sm font-medium text-on-surface flex items-center gap-2">
-                        <i class="iconoir-notes text-on-surface-variant"></i>
-                        Título do Trabalho
-                    </label>
+                    <div class="flex items-center justify-between">
+                        <label for="titulo" class="text-sm font-medium text-on-surface flex items-center gap-2">
+                            <i class="iconoir-notes text-on-surface-variant"></i>
+                            Título do Trabalho
+                        </label>
+                        <span id="titulo-counter" class="text-xs text-on-surface-variant">0 / 255</span>
+                    </div>
                     <input 
                         type="text" 
                         id="titulo" 
                         name="titulo" 
+                        maxlength="255"
                         placeholder="Ex: Desenvolvimento de Aplicações Web Modernas" 
                         required
                         class="w-full px-4 py-3 bg-surface-container hover:bg-surface-container-high/60 focus:bg-surface border border-transparent focus:border-outline-variant rounded-2xl text-on-surface outline-none transition-all placeholder:text-on-surface-variant/50 text-sm focus:ring-2 focus:ring-inverse-surface/10"
@@ -49,14 +53,18 @@
                 <div class="grid sm:grid-cols-2 gap-5">
                     <!-- Nome do Autor -->
                     <div class="flex flex-col gap-2">
-                        <label for="autor" class="text-sm font-medium text-on-surface flex items-center gap-2">
-                            <i class="iconoir-group text-on-surface-variant"></i>
-                            Nome do Autor
-                        </label>
+                        <div class="flex items-center justify-between">
+                            <label for="autor" class="text-sm font-medium text-on-surface flex items-center gap-2">
+                                <i class="iconoir-group text-on-surface-variant"></i>
+                                Nome do Autor
+                            </label>
+                            <span id="autor-counter" class="text-xs text-on-surface-variant">0 / 120</span>
+                        </div>
                         <input 
                             type="text" 
                             id="autor" 
                             name="autor" 
+                            maxlength="120"
                             placeholder="Nome completo do autor principal" 
                             required
                             class="w-full px-4 py-3 bg-surface-container hover:bg-surface-container-high/60 focus:bg-surface border border-transparent focus:border-outline-variant rounded-2xl text-on-surface outline-none transition-all placeholder:text-on-surface-variant/50 text-sm focus:ring-2 focus:ring-inverse-surface/10"
@@ -65,14 +73,18 @@
 
                     <!-- Campus / Instituição -->
                     <div class="flex flex-col gap-2">
-                        <label for="instituicao" class="text-sm font-medium text-on-surface flex items-center gap-2">
-                            <i class="iconoir-building text-on-surface-variant"></i>
-                            Campus / Instituição
-                        </label>
+                        <div class="flex items-center justify-between">
+                            <label for="instituicao" class="text-sm font-medium text-on-surface flex items-center gap-2">
+                                <i class="iconoir-building text-on-surface-variant"></i>
+                                Campus / Instituição
+                            </label>
+                            <span id="instituicao-counter" class="text-xs text-on-surface-variant">0 / 255</span>
+                        </div>
                         <input 
                             type="text" 
                             id="instituicao" 
                             name="instituicao" 
+                            maxlength="255"
                             placeholder="Ex: IFRS - Campus Farroupilha" 
                             required
                             class="w-full px-4 py-3 bg-surface-container hover:bg-surface-container-high/60 focus:bg-surface border border-transparent focus:border-outline-variant rounded-2xl text-on-surface outline-none transition-all placeholder:text-on-surface-variant/50 text-sm focus:ring-2 focus:ring-inverse-surface/10"
@@ -111,7 +123,11 @@
                             <i class="iconoir-page text-on-surface-variant"></i>
                             Resumo
                         </label>
-                        <span class="text-xs text-on-surface-variant">Objetivos, metodologia e resultados</span>
+                        <div class="flex items-center gap-2 text-xs text-on-surface-variant">
+                            <span class="hidden sm:inline">Objetivos, metodologia e resultados</span>
+                            <span class="hidden sm:inline">&bull;</span>
+                            <span id="resumo-counter">0 caracteres</span>
+                        </div>
                     </div>
                     <textarea 
                         id="resumo" 
@@ -144,4 +160,35 @@
         </div>
     </div>
 </div>
+
+<script>
+    const counters = [
+        { id: 'titulo', max: 255, counterId: 'titulo-counter' },
+        { id: 'autor', max: 120, counterId: 'autor-counter' },
+        { id: 'instituicao', max: 255, counterId: 'instituicao-counter' }
+    ];
+
+    counters.forEach(({ id, max, counterId }) => {
+        const input = document.getElementById(id);
+        const counter = document.getElementById(counterId);
+        if (input && counter) {
+            const update = () => {
+                counter.textContent = `${input.value.length} / ${max}`;
+            };
+            input.addEventListener('input', update);
+            update();
+        }
+    });
+
+    const resumoInput = document.getElementById('resumo');
+    const resumoCounter = document.getElementById('resumo-counter');
+    if (resumoInput && resumoCounter) {
+        const updateResumo = () => {
+            const len = resumoInput.value.length;
+            resumoCounter.textContent = `${len} ${len === 1 ? 'caractere' : 'caracteres'}`;
+        };
+        resumoInput.addEventListener('input', updateResumo);
+        updateResumo();
+    }
+</script>
 {% endblock %}

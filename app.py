@@ -36,6 +36,10 @@ def form():
             flash('Por favor, preencha todos os campos.', 'danger')
             return redirect(url_for('form'))
 
+        if len(titulo) > 255 or len(autor) > 120 or len(instituicao) > 255 or len(modalidade) > 80:
+            flash('Limite de caracteres excedido em um ou mais campos.', 'danger')
+            return redirect(url_for('form'))
+
         try:
             novo_trabalho = Trabalho(
                 titulo=titulo, 
