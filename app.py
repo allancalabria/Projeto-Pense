@@ -1,27 +1,22 @@
+from itsdangerous import exc
 from flask import Flask, render_template, request, redirect, url_for, flash
 import os
 from dotenv import load_dotenv
+from config import db, Config
+from models import Trabalho
 
 app = Flask(__name__)
 load_dotenv()
-app.secret_key = os.getenv("secret_key")
+app.config.from_object(Config)
+db.init_app(app)
 
-# Lista global temporária (simulação de banco de dados na memória do servidor)
-# Já iniciada com um exemplo para fins de testes no seu Dashboard
-trabalhos = [
-    {
-        "titulo": "Desenvolvimento do Sistema PEnsE-Submite",
-        "autor": "Grupo Front-end e Back-end",
-        "instituicao": "IFRS - Campus Farroupilha",
-        "modalidade": "Ensino",
-        "resumo": "Protótipo inicial para simular a submissão de resumos da Jornada Científica."
-    }
-]
+with app.app_context():
+    db.create_all()
 
 # Rota do Dashboard (Página Inicial)
 @app.route('/')
 def dashboard():
-    # Passa a lista global de trabalhos para o template HTML
+    trabalhos = Trabalho.query.all()
     return render_template('dashboard.html', trabalhos=trabalhos)
 
 
@@ -29,38 +24,31 @@ def dashboard():
 @app.route('/form', methods=['GET', 'POST'])
 def form():
     if request.method == 'POST':
-        # 1. Captura os dados enviados pelo formulário HTML através do atributo 'name'
         titulo = request.form.get('titulo')
         autor = request.form.get('autor')
         instituicao = request.form.get('instituicao')
         modalidade = request.form.get('modalidade')
         resumo = request.form.get('resumo')
-        
-        # 2. Validação simples: garante que nenhum campo veio em branco
-        if titulo and autor and instituicao and modalidade and resumo:
-            # Cria um dicionário com os dados do novo trabalho
-            novo_trabalho = {
-                "titulo": titulo,
-                "autor": autor,
-                "instituicao": instituicao,
-                "modalidade": modalidade,
-                "resumo": resumo
-            }
-            # 3. Adiciona o dicionário na lista global
-            trabalhos.append(novo_trabalho)
-            
-            # Mensagem de sucesso (opcional, mas boa prática)
+
+        if not titulo or not autor or not instituicao or not modalidade or not resumo:
+            flash('Por favor, preencha todos os campos.', 'danger')
+            return redirect(url_for('form'))
+
+        try:
+            novo_trabalho = Trabalho(
+                                titulo=titulo, 
+                                autor=autor, 
+                                instituicao=instituicao, 
+                                modalidade=modalidade, 
+                                resumo=resumo
+                            )
+            db.session.add(novo_trabalho)
+            db.session.commit()
             flash("Trabalho cadastrado com sucesso!", "success")
-            
-            # 4. Redireciona o usuário imediatamente para a página inicial (Dashboard)
-            return redirect(url_for('dashboard'))
-        
-        # Caso falte algum campo, exibe erro e recarrega o formulário
-        flash("Preencha todos os campos obrigatórios!", "danger")
-        return redirect(url_for('form'))    
-        
-    # Se o método for GET, apenas exibe a página do formulário
-    # Certifique-se de que o nome do arquivo aqui bate com o seu arquivo HTML (ex: enviar.html)
+        except Exception as e:
+            db.session.rollback()
+            flash('Erro ao cadastrar o trabalho.', 'danger')
+        return redirect(url_for('dashboard'))
     return render_template('form.html')
 
 
