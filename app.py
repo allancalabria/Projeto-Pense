@@ -1,12 +1,16 @@
 import os
+import hmac
+import re
+from functools import wraps
 from dotenv import load_dotenv
 
 load_dotenv()
 
-from flask import Flask, render_template, request, redirect, url_for, flash
-from werkzeug.middleware.proxy_fix import ProxyFix
+from flask import Flask, g, render_template, request, redirect, url_for, flash, session, abort
+from sqlalchemy import inspect, text
+from werkzeug.security import check_password_hash, generate_password_hash
 from config import db, Config
-from models import Trabalho
+from models import Trabalho, Usuario
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -14,23 +18,147 @@ db.init_app(app)
 
 with app.app_context():
     db.create_all()
+    columns = {column["name"] for column in inspect(db.engine).get_columns("trabalho")}
+    with db.engine.begin() as connection:
+        if "status" not in columns:
+            connection.execute(text("ALTER TABLE trabalho ADD COLUMN status VARCHAR(20) NOT NULL DEFAULT 'Pendente'"))
+        if "usuario_id" not in columns:
+            connection.execute(text("ALTER TABLE trabalho ADD COLUMN usuario_id INTEGER REFERENCES usuarios(id)"))
+
+
+@app.before_request
+def load_logged_in_user():
+    user_id = session.get("usuario_id")
+    g.current_user = db.session.get(Usuario, user_id) if user_id else None
+
+
+@app.context_processor
+def inject_template_helpers():
+    def csrf_token():
+        if "_csrf_token" not in session:
+            import secrets
+            session["_csrf_token"] = secrets.token_urlsafe(32)
+        return session["_csrf_token"]
+
+    return {"current_user": g.get("current_user"), "csrf_token": csrf_token}
+
+
+def valid_csrf_token():
+    submitted_token = request.form.get("csrf_token", "")
+    session_token = session.get("_csrf_token", "")
+    return bool(session_token and hmac.compare_digest(submitted_token, session_token))
+
+
+def login_required(view):
+    @wraps(view)
+    def wrapped_view(*args, **kwargs):
+        if g.current_user is None:
+            flash("Faça login para continuar.", "warning")
+            return redirect(url_for("login"))
+        return view(*args, **kwargs)
+    return wrapped_view
 
 # Rota do Dashboard (Página Inicial)
 @app.route('/')
 def dashboard():
-    trabalhos = Trabalho.query.all()
+    trabalhos = Trabalho.query.order_by(Trabalho.id.desc()).all()
     return render_template('dashboard.html', trabalhos=trabalhos)
+
+
+@app.route('/cadastro', methods=['GET', 'POST'])
+def cadastro():
+    if request.method == 'POST':
+        if not valid_csrf_token():
+            abort(400)
+
+        nome = request.form.get('nome', '').strip()
+        email = request.form.get('email', '').strip().lower()
+        cpf = re.sub(r'\D', '', request.form.get('cpf', ''))
+        instituicao = request.form.get('instituicao', '').strip()
+        senha = request.form.get('senha', '')
+
+        if not all((nome, email, cpf, instituicao, senha)):
+            flash('Preencha todos os campos.', 'danger')
+            return redirect(url_for('cadastro'))
+        if len(nome) > 160 or len(email) > 254 or len(instituicao) > 255:
+            flash('Um ou mais campos excedem o limite permitido.', 'danger')
+            return redirect(url_for('cadastro'))
+        if not re.fullmatch(r'[^@\s]+@[^@\s]+\.[^@\s]+', email):
+            flash('Informe um e-mail válido.', 'danger')
+            return redirect(url_for('cadastro'))
+        if len(cpf) != 11:
+            flash('Informe um CPF com 11 números.', 'danger')
+            return redirect(url_for('cadastro'))
+        if len(senha) < 8:
+            flash('A senha deve ter pelo menos 8 caracteres.', 'danger')
+            return redirect(url_for('cadastro'))
+        if Usuario.query.filter_by(email=email).first():
+            flash('Este e-mail já está cadastrado.', 'danger')
+            return redirect(url_for('cadastro'))
+        if Usuario.query.filter_by(cpf=cpf).first():
+            flash('Este CPF já está cadastrado.', 'danger')
+            return redirect(url_for('cadastro'))
+
+        usuario = Usuario(
+            nome=nome,
+            email=email,
+            cpf=cpf,
+            instituicao=instituicao,
+            senha_hash=generate_password_hash(senha),
+        )
+        db.session.add(usuario)
+        db.session.commit()
+        flash('Cadastro realizado com sucesso! Entre com seu e-mail e senha.', 'success')
+        return redirect(url_for('login'))
+
+    return render_template('cadastro.html')
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        if not valid_csrf_token():
+            abort(400)
+        email = request.form.get('email', '').strip().lower()
+        senha = request.form.get('senha', '')
+        usuario = Usuario.query.filter_by(email=email).first()
+        if usuario is None or not check_password_hash(usuario.senha_hash, senha):
+            flash('E-mail ou senha incorretos.', 'danger')
+            return redirect(url_for('login'))
+
+        session.clear()
+        session['usuario_id'] = usuario.id
+        flash(f'Bem-vindo(a), {usuario.nome}!', 'success')
+        return redirect(url_for('dashboard'))
+
+    return render_template('login.html')
+
+
+@app.post('/logout')
+@login_required
+def logout():
+    if not valid_csrf_token():
+        abort(400)
+    session.clear()
+    flash('Você saiu da sua conta.', 'success')
+    return redirect(url_for('dashboard'))
 
 
 # Rota do Formulário
 @app.route('/form', methods=['GET', 'POST'])
+@login_required
 def form():
     if request.method == 'POST':
+        if not valid_csrf_token():
+            abort(400)
         titulo = request.form.get('titulo')
         autor = request.form.get('autor')
         instituicao = request.form.get('instituicao')
         modalidade = request.form.get('modalidade')
         resumo = request.form.get('resumo')
+        if modalidade not in {'Ensino', 'Pesquisa', 'Extensão'}:
+            flash('Selecione uma modalidade válida.', 'danger')
+            return redirect(url_for('form'))
 
         if not titulo or not autor or not instituicao or not modalidade or not resumo:
             flash('Por favor, preencha todos os campos.', 'danger')
@@ -46,11 +174,12 @@ def form():
                 autor=autor, 
                 instituicao=instituicao, 
                 modalidade=modalidade, 
-                resumo=resumo
+                resumo=resumo,
+                usuario_id=g.current_user.id,
             )
             db.session.add(novo_trabalho)
             db.session.commit()
-            flash("Trabalho cadastrado com sucesso!", "success")
+            flash("Submissão enviada com sucesso!", "success")
             return redirect(url_for('dashboard'))
         except Exception as e:
             db.session.rollback()
@@ -59,6 +188,30 @@ def form():
             return redirect(url_for('form'))
             
     return render_template('form.html')
+
+
+@app.get('/admin')
+@login_required
+def admin():
+    trabalhos = Trabalho.query.order_by(Trabalho.id.desc()).all()
+    return render_template('admin.html', trabalhos=trabalhos)
+
+
+@app.post('/admin/<int:trabalho_id>/status')
+@login_required
+def atualizar_status(trabalho_id):
+    if not valid_csrf_token():
+        abort(400)
+    trabalho = db.get_or_404(Trabalho, trabalho_id)
+    novo_status = request.form.get('status')
+    if novo_status not in {'Pendente', 'Aprovado', 'Reprovado'}:
+        flash('Status inválido.', 'danger')
+        return redirect(url_for('admin'))
+
+    trabalho.status = novo_status
+    db.session.commit()
+    flash('Status do trabalho atualizado.', 'success')
+    return redirect(url_for('admin'))
 
 
 if __name__ == '__main__':

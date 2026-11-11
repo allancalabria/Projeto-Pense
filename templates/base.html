@@ -70,17 +70,20 @@
     <main class="flex flex-col text-on-surface bg-surface-container min-h-[100dvh]">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
-                <div class="w-full max-w-md m-4 flex flex-col gap-3 fixed bottom-0 left-0 z-100">
+                <div class="w-full max-w-md m-4 flex flex-col gap-3 fixed top-0 right-0 z-[1100]">
                     {% for category, message in messages %}
-                        <div class="flash-alert flex items-center justify-between gap-3 p-4 rounded-2xl border text-sm transition-all duration-200 
-                                bg-inverse-surface border-inverse-on-surface/20 text-inverse-on-surface" role="alert">
+                        <div class="flash-alert flex items-center justify-between gap-3 p-4 rounded-xl border text-sm shadow-lg transition-all duration-200
+                                {% if category in ['danger', 'error'] %}bg-red-50 border-red-200 text-red-900
+                                {% elif category == 'success' %}bg-emerald-50 border-emerald-200 text-emerald-900
+                                {% elif category == 'warning' %}bg-amber-50 border-amber-200 text-amber-900
+                                {% else %}bg-white border-slate-200 text-slate-900{% endif %}" role="alert">
                             <div class="flex items-center gap-3">
                                 {% if category in ['danger', 'error'] %}
-                                    <i class="iconoir-warning-triangle text-xl text-red-300 shrink-0"></i>
+                                    <i class="iconoir-warning-triangle text-xl text-red-700 shrink-0"></i>
                                 {% elif category == 'success' %}
-                                    <i class="iconoir-check-circle text-xl text-emerald-300 shrink-0"></i>
+                                    <i class="iconoir-check-circle text-xl text-emerald-700 shrink-0"></i>
                                 {% elif category == 'warning' %}
-                                    <i class="iconoir-warning-circle text-xl text-yellow-300 shrink-0"></i>
+                                    <i class="iconoir-warning-circle text-xl text-amber-700 shrink-0"></i>
                                 {% else %}
                                     <i class="iconoir-info-circle text-xl shrink-0"></i>
                                 {% endif %}
@@ -88,7 +91,7 @@
                             </div>
                             <button type="button" 
                                 onclick="const alert = this.closest('.flash-alert'); if (alert) { alert.classList.add('opacity-0', 'scale-95'); setTimeout(() => alert.remove(), 200); }" 
-                                class="p-1 rounded-xl hover:bg-inverse-on-surface/10 transition-colors opacity-70 hover:opacity-100 cursor-pointer shrink-0" 
+                                class="p-1 rounded-lg hover:bg-black/5 transition-colors opacity-70 hover:opacity-100 cursor-pointer shrink-0"
                                 aria-label="Fechar">
                                 <i class="iconoir-xmark text-lg"></i>
                             </button>
@@ -97,6 +100,23 @@
                 </div>
             {% endif %}
         {% endwith %}
+
+        <nav class="flex flex-wrap items-center justify-between gap-3 px-6 py-3 bg-white border-b border-slate-200 relative z-10">
+            <a href="{{ url_for('dashboard') }}" class="font-semibold text-slate-900">PEnsE Trabalhos Acadêmicos</a>
+            <div class="flex items-center gap-3 text-sm">
+                {% if current_user %}
+                    <a href="{{ url_for('admin') }}" class="text-slate-700 hover:text-blue-700">Painel de avaliação</a>
+                    <span class="hidden sm:inline text-slate-500">{{ current_user.nome }}</span>
+                    <form action="{{ url_for('logout') }}" method="post">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button class="text-slate-700 hover:text-red-700" type="submit">Sair</button>
+                    </form>
+                {% else %}
+                    <a href="{{ url_for('login') }}" class="text-slate-700 hover:text-blue-700">Entrar</a>
+                    <a href="{{ url_for('cadastro') }}" class="text-slate-700 hover:text-blue-700">Criar conta</a>
+                {% endif %}
+            </div>
+        </nav>
 
         {% block content %}{% endblock %}
     </main>

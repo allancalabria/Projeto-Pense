@@ -7,6 +7,9 @@ class Trabalho(db.Model):
     instituicao = db.Column(db.String(255), nullable=False)
     modalidade = db.Column(db.String(80), nullable=False)
     resumo = db.Column(db.Text, nullable=False)
+    status = db.Column(db.String(20), nullable=False, default="Pendente", server_default="Pendente")
+    usuario_id = db.Column(db.Integer, db.ForeignKey("usuarios.id"), nullable=True)
+    usuario = db.relationship("Usuario", back_populates="trabalhos")
 
     def __init__(self, titulo, autor, instituicao, modalidade, resumo, **kwargs):
         super().__init__(**kwargs)

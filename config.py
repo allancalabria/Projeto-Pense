@@ -5,7 +5,9 @@ from flask_sqlalchemy import SQLAlchemy
 load_dotenv()
 
 class Config:
-    SECRET_KEY = os.getenv("SECRET_KEY") or os.getenv("secret_key") or "chave-secreta-padrao"
+    SECRET_KEY = os.getenv("SECRET_KEY") or os.getenv("secret_key") or os.urandom(32)
+    SESSION_COOKIE_HTTPONLY = True
+    SESSION_COOKIE_SAMESITE = "Lax"
     
     # Obtém a URL do banco de dados
     db_url = os.environ.get('DATABASE_URL', 'sqlite:///local.db')

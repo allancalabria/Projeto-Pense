@@ -30,6 +30,11 @@ A aplicação oferece um ambiente intuitivo para que autores e estudantes submet
   - Cadastro simplificado com campos para: Título, Autor, Instituição, Modalidade e Resumo.
   - Validação de preenchimento obrigatório de todos os campos.
   - Notificações dinâmicas (flash messages) informando o sucesso ou erro da operação.
+- **👤 Contas e avaliação:**
+
+   - Cadastro com nome, e-mail, CPF, instituição/campus e senha armazenada com hash.
+   - Login por e-mail e senha; submissões ficam vinculadas à conta e começam como **Pendente**.
+   - Painel autenticado em `/admin` com todas as submissões e alteração para **Aprovado** ou **Reprovado**.
 - **💾 Banco de Dados Híbrido:**
 
   - Execução automática em **SQLite** para desenvolvimento local simplificado.
@@ -71,7 +76,8 @@ A aplicação oferece um ambiente intuitivo para que autores e estudantes submet
 Projeto-Pense/
 ├── models/
 │   ├── __init__.py        # Exportação dos modelos
-│   └── Trabalho.py        # Modelo SQLAlchemy da entidade Trabalho
+│   ├── Trabalho.py        # Modelo SQLAlchemy da entidade Trabalho
+│   └── Usuario.py         # Modelo SQLAlchemy da conta de usuário
 ├── static/
 │   ├── css/
 │   │   └── style.css      # Estilização complementar e variáveis visuais
@@ -83,7 +89,10 @@ Projeto-Pense/
 ├── templates/
 │   ├── base.html          # Template base com navbar, alertas e background
 │   ├── dashboard.html     # Página inicial com cards dos trabalhos
-│   └── form.html          # Página de cadastro/submissão de trabalho
+│   ├── form.html          # Página de submissão de trabalho
+│   ├── cadastro.html      # Cadastro de usuários
+│   ├── login.html         # Autenticação
+│   └── admin.html         # Painel de avaliação
 ├── instance/              # Banco SQLite local (criado automaticamente)
 ├── .env.example           # Modelo de variáveis de ambiente
 ├── .gitignore             # Arquivos ignorados pelo controle de versão
@@ -148,6 +157,8 @@ Projeto-Pense/
    ```
 6. **Acesse no navegador:**
    Abra [http://localhost:5000](http://localhost:5000)
+
+Crie uma conta em `/cadastro` para entrar e enviar submissões. O painel de avaliação em `/admin` está disponível para usuários autenticados.
 
 ---
 

@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="w-full max-w-7xl mx-auto px-6 py-8">
+    <div class="flex flex-wrap items-end justify-between gap-4 border-b border-slate-300 pb-4">
+        <div>
+            <p class="text-sm font-semibold text-blue-700">Avaliação</p>
+            <h1 class="text-2xl font-semibold text-slate-950 mt-1">Submissões recebidas</h1>
+        </div>
+        <a href="{{ url_for('dashboard') }}" class="text-sm font-medium text-slate-700 hover:text-blue-700">Voltar à página inicial</a>
+    </div>
+
+    {% if not trabalhos %}
+        <p class="py-12 text-center text-slate-600">Ainda não há submissões cadastradas.</p>
+    {% else %}
+        <div class="mt-5 overflow-x-auto bg-white border border-slate-200 rounded-lg">
+            <table class="w-full min-w-[760px] text-left text-sm">
+                <thead class="bg-slate-100 text-slate-700">
+                    <tr>
+                        <th class="px-4 py-3 font-semibold">Trabalho</th>
+                        <th class="px-4 py-3 font-semibold">Autor / Campus</th>
+                        <th class="px-4 py-3 font-semibold">Modalidade</th>
+                        <th class="px-4 py-3 font-semibold">Status</th>
+                        <th class="px-4 py-3 font-semibold">Atualizar</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-200">
+                    {% for trabalho in trabalhos %}
+                        <tr class="align-top">
+                            <td class="px-4 py-4">
+                                <h2 class="font-semibold text-slate-950">{{ trabalho.titulo }}</h2>
+                                <p class="mt-1 max-w-md text-slate-600">{{ trabalho.resumo }}</p>
+                            </td>
+                            <td class="px-4 py-4 text-slate-700">
+                                <p>{{ trabalho.autor }}</p>
+                                <p class="mt-1 text-slate-500">{{ trabalho.instituicao }}</p>
+                                {% if trabalho.usuario %}<p class="mt-1 text-xs text-slate-500">{{ trabalho.usuario.email }}</p>{% endif %}
+                            </td>
+                            <td class="px-4 py-4 text-slate-700">{{ trabalho.modalidade }}</td>
+                            <td class="px-4 py-4">
+                                <span class="inline-block rounded-full px-2.5 py-1 text-xs font-semibold
+                                    {% if trabalho.status == 'Aprovado' %}bg-emerald-100 text-emerald-800
+                                    {% elif trabalho.status == 'Reprovado' %}bg-red-100 text-red-800
+                                    {% else %}bg-amber-100 text-amber-900{% endif %}">{{ trabalho.status }}</span>
+                            </td>
+                            <td class="px-4 py-4">
+                                <form action="{{ url_for('atualizar_status', trabalho_id=trabalho.id) }}" method="post" class="flex items-center gap-2">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <select name="status" aria-label="Status de {{ trabalho.titulo }}" class="min-w-32 rounded-md border border-slate-300 bg-white px-2 py-2">
+                                        {% for status in ['Pendente', 'Aprovado', 'Reprovado'] %}
+                                            <option value="{{ status }}" {% if trabalho.status == status %}selected{% endif %}>{{ status }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <button type="submit" class="rounded-md bg-slate-900 px-3 py-2 font-medium text-white hover:bg-slate-700">Salvar</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}
