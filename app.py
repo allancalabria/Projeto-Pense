@@ -214,5 +214,18 @@ def atualizar_status(trabalho_id):
     return redirect(url_for('admin'))
 
 
+@app.errorhandler(404)
+def pagina_nao_encontrada(error):
+    return render_template('404.html'), 404
+
+
+@app.errorhandler(500)
+def erro_interno_servidor(error):
+    db.session.rollback()
+    app.logger.error('Erro interno do servidor: %s', error)
+    return render_template('500.html'), 500
+
+
+
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
