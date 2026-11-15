@@ -144,6 +144,83 @@ def logout():
     return redirect(url_for('dashboard'))
 
 
+# Rota para editar dados do Usuário
+@app.route('/perfil/editar', methods=['GET', 'POST'])
+@login_required
+def editar_perfil():
+    if request.method == 'POST':
+        # Verifica a proteção CSRF do formulário
+        if not valid_csrf_token():
+            abort(400)
+        nome = request.form.get('nome', '').strip()
+        email = request.form.get('email', '').strip().lower()
+        cpf = re.sub(r'\D', '', request.form.get('cpf', ''))
+        instituicao = request.form.get('instituicao', '').strip()
+        dados = {
+            'nome': nome,
+            'email': email,
+            'cpf': cpf,
+            'instituicao': instituicao
+        }
+
+        if not all(dados.values()):
+            flash('Preencha todos os campos.', 'danger')
+            return render_template('editar_usuario.html', dados=dados)
+
+        if len(nome) > 160 or len(email) > 254 or len(instituicao) > 255:
+            flash('Um ou mais campos excedem o limite permitido.', 'danger')
+            return render_template('editar_usuario.html', dados=dados)
+
+        if not re.fullmatch(r'[^@\s]+@[^@\s]+\.[^@\s]+', email):
+            flash('Informe um e-mail válido.', 'danger')
+            return render_template('editar_usuario.html', dados=dados)
+
+        if len(cpf) != 11:
+            flash('Informe um CPF com 11 números.', 'danger')
+            return render_template('editar_usuario.html', dados=dados)
+
+        email_existente = Usuario.query.filter(
+            Usuario.email == email,
+            Usuario.id != g.current_user.id
+        ).first()
+
+        if email_existente:
+            flash('Este e-mail já está cadastrado por outro usuário.', 'danger')
+            return render_template('editar_usuario.html', dados=dados)
+
+        cpf_existente = Usuario.query.filter(
+            Usuario.cpf == cpf,
+            Usuario.id != g.current_user.id
+        ).first()
+
+        if cpf_existente:
+            flash('Este CPF já está cadastrado por outro usuário.', 'danger')
+            return render_template('editar_usuario.html', dados=dados)
+
+        try:
+            g.current_user.nome = nome
+            g.current_user.email = email
+            g.current_user.cpf = cpf
+            g.current_user.instituicao = instituicao
+
+            db.session.commit()
+
+            flash('Seus dados foram atualizados com sucesso!', 'success')
+            return redirect(url_for('dashboard'))
+
+        except Exception as e:
+            db.session.rollback()
+            app.logger.error(
+                'Erro ao atualizar os dados do usuário: %s',
+                e,
+                exc_info=True
+            )
+            flash('Não foi possível atualizar seus dados.', 'danger')
+            return render_template('editar_usuario.html', dados=dados)
+
+    return render_template('editar_usuario.html', dados=None)
+
+
 # Rota do Formulário
 @app.route('/form', methods=['GET', 'POST'])
 @login_required
