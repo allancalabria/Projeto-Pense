@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="w-full max-w-xl mx-auto px-6 py-10">
+    <div class="bg-white p-6 sm:p-8 border border-slate-200 rounded-lg">
+        <p class="text-sm font-semibold text-blue-700">Minha conta</p>
+        <h1 class="text-2xl font-semibold text-slate-950 mt-2">Editar perfil</h1>
+        <p class="text-sm text-slate-600 mt-1">Atualize suas informações cadastrais.</p>
+
+        <form action="{{ url_for('editar_perfil') }}" method="post" class="mt-6 flex flex-col gap-4">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <label class="flex flex-col gap-1 text-sm font-medium text-slate-800">Nome completo
+                <input name="nome" type="text" maxlength="160" value="{{ dados.nome if dados else current_user.nome }}" autocomplete="name" required class="rounded-md border border-slate-300 px-3 py-2.5 font-normal">
+            </label>
+
+            <label class="flex flex-col gap-1 text-sm font-medium text-slate-800">E-mail
+                <input name="email" type="email" maxlength="254" value="{{ dados.email if dados else current_user.email }}" autocomplete="email" required class="rounded-md border border-slate-300 px-3 py-2.5 font-normal">
+            </label>
+
+            <label class="flex flex-col gap-1 text-sm font-medium text-slate-800">CPF
+                <input name="cpf" type="text" inputmode="numeric" maxlength="14" value="{{ dados.cpf if dados else current_user.cpf }}" placeholder="000.000.000-00" required class="rounded-md border border-slate-300 px-3 py-2.5 font-normal">
+            </label>
+
+            <label class="flex flex-col gap-1 text-sm font-medium text-slate-800">Instituição / Campus
+                <input name="instituicao" type="text" maxlength="255" value="{{ dados.instituicao if dados else current_user.instituicao }}" autocomplete="organization"  required class="rounded-md border border-slate-300 px-3 py-2.5 font-normal">
+            </label>
+
+            <div class="flex flex-col sm:flex-row gap-3 mt-2">
+                <button type="submit" class="rounded-md bg-blue-700 px-4 py-2.5 font-medium text-white hover:bg-blue-800">
+                    Salvar alterações
+                </button>
+                <a href="{{ url_for('dashboard') }}" class="rounded-md border border-slate-300 px-4 py-2.5 text-center font-medium text-slate-700 hover:bg-slate-100"> Cancelar </a>
+            </div>
+        </form>
+    </div>
+</section>
+
+{% endblock %}
