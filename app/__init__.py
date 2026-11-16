@@ -12,6 +12,8 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from config import db, Config
 from app.models import Usuario
 from app.trabalhos import bp as trabalhos_bp
+from app.trabalhos.models import Trabalho
+from app.utils import login_required, valid_csrf_token
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -45,20 +47,7 @@ def inject_template_helpers():
     return {"current_user": g.get("current_user"), "csrf_token": csrf_token}
 
 
-def valid_csrf_token():
-    submitted_token = request.form.get("csrf_token", "")
-    session_token = session.get("_csrf_token", "")
-    return bool(session_token and hmac.compare_digest(submitted_token, session_token))
 
-
-def login_required(view):
-    @wraps(view)
-    def wrapped_view(*args, **kwargs):
-        if g.current_user is None:
-            flash("Faça login para continuar.", "warning")
-            return redirect(url_for("login"))
-        return view(*args, **kwargs)
-    return wrapped_view
 
 
 @app.route('/cadastro', methods=['GET', 'POST'])
@@ -217,50 +206,7 @@ def editar_perfil():
     return render_template('editar_usuario.html', dados=None)
 
 
-# Rota do Formulário
-@app.route('/form', methods=['GET', 'POST'])
-@login_required
-def form():
-    if request.method == 'POST':
-        if not valid_csrf_token():
-            abort(400)
-        titulo = request.form.get('titulo')
-        autor = request.form.get('autor')
-        instituicao = request.form.get('instituicao')
-        modalidade = request.form.get('modalidade')
-        resumo = request.form.get('resumo')
-        if modalidade not in {'Ensino', 'Pesquisa', 'Extensão'}:
-            flash('Selecione uma modalidade válida.', 'danger')
-            return redirect(url_for('form'))
 
-        if not titulo or not autor or not instituicao or not modalidade or not resumo:
-            flash('Por favor, preencha todos os campos.', 'danger')
-            return redirect(url_for('form'))
-
-        if len(titulo) > 255 or len(autor) > 120 or len(instituicao) > 255 or len(modalidade) > 80:
-            flash('Limite de caracteres excedido em um ou mais campos.', 'danger')
-            return redirect(url_for('form'))
-
-        try:
-            novo_trabalho = Trabalho(
-                titulo=titulo, 
-                autor=autor, 
-                instituicao=instituicao, 
-                modalidade=modalidade, 
-                resumo=resumo,
-                usuario_id=g.current_user.id,
-            )
-            db.session.add(novo_trabalho)
-            db.session.commit()
-            flash("Submissão enviada com sucesso!", "success")
-            return redirect(url_for('trabalhos.dashboard'))
-        except Exception as e:
-            db.session.rollback()
-            app.logger.error(f"Erro ao cadastrar o trabalho: {e}", exc_info=True)
-            flash('Erro ao cadastrar o trabalho.', 'danger')
-            return redirect(url_for('form'))
-            
-    return render_template('form.html')
 
 
 @app.get('/admin')

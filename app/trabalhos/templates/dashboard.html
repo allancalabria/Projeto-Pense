@@ -8,7 +8,7 @@
             <h1 class="text-lg font-medium hidden md:inline">PEnsE Trabalhos Acadêmicos</h1>
         </div>
         <!-- Botão para navegar até o formulário de envio -->
-        <a href="{{ url_for('form') if current_user else url_for('login') }}" class="bg-inverse-on-surface hover:bg-inverse-on-surface-hover text-inverse-surface py-2 pl-5 pr-6 rounded-full flex items-center gap-2">
+        <a href="{{ url_for('trabalhos.form') if current_user else url_for('login') }}" class="bg-inverse-on-surface hover:bg-inverse-on-surface-hover text-inverse-surface py-2 pl-5 pr-6 rounded-full flex items-center gap-2">
             <i class="iconoir-plus text-lg"></i>
             {{ 'Cadastrar trabalho' if current_user else 'Entrar para submeter' }}
         </a>

@@ -28,7 +28,7 @@
             <hr class="text-outline-variant my-4">
 
             <!-- Formulário enviando via POST para a rota Flask -->
-            <form action="{{ url_for('form') }}" method="POST" class="flex flex-col gap-5">
+            <form action="{{ url_for('trabalhos.form') }}" method="POST" class="flex flex-col gap-5">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 
                 <!-- Título do Trabalho -->
