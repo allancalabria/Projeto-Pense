@@ -9,7 +9,7 @@
             <h1 class="text-lg font-medium hidden md:inline">PEnsE Trabalhos Acadêmicos</h1>
         </div>
         <!-- Botão para voltar à listagem de trabalhos -->
-        <a href="{{ url_for('dashboard') }}" class="bg-inverse-on-surface hover:bg-inverse-on-surface-hover text-inverse-surface py-2 pl-5 pr-6 rounded-full flex items-center gap-2">
+        <a href="{{ url_for('trabalhos.dashboard') }}" class="bg-inverse-on-surface hover:bg-inverse-on-surface-hover text-inverse-surface py-2 pl-5 pr-6 rounded-full flex items-center gap-2">
             <i class="iconoir-arrow-left text-lg"></i>
             Voltar ao início
         </a>
@@ -28,7 +28,7 @@
             <hr class="text-outline-variant my-4">
 
             <!-- Formulário enviando via POST para a rota Flask -->
-            <form action="{{ url_for('form') }}" method="POST" class="flex flex-col gap-5">
+            <form action="{{ url_for('trabalhos.form') }}" method="POST" class="flex flex-col gap-5">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 
                 <!-- Título do Trabalho -->
@@ -145,7 +145,7 @@
                 <!-- Botões de Ação -->
                 <div class="flex flex-col-reverse sm:flex-row justify-between items-center gap-4 mt-4 pt-4 border-t border-outline-variant">
                     <a 
-                        href="{{ url_for('dashboard') }}" 
+                        href="{{ url_for('trabalhos.dashboard') }}" 
                         class="w-full sm:w-auto px-6 py-2.5 rounded-full border border-outline-variant hover:bg-surface-container text-on-surface-variant hover:text-on-surface text-sm font-medium flex items-center justify-center gap-2 transition-colors"
                     >
                         Cancelar

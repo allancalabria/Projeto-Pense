@@ -102,19 +102,19 @@
         {% endwith %}
 
         <nav class="flex flex-wrap items-center justify-between gap-3 px-6 py-3 bg-white border-b border-slate-200 relative z-10">
-            <a href="{{ url_for('dashboard') }}" class="font-semibold text-slate-900">PEnsE Trabalhos Acadêmicos</a>
+            <a href="{{ url_for('trabalhos.dashboard') }}" class="font-semibold text-slate-900">PEnsE Trabalhos Acadêmicos</a>
             <div class="flex items-center gap-3 text-sm">
                 {% if current_user %}
-                    <a href="{{ url_for('admin') }}" class="text-slate-700 hover:text-blue-700">Painel de avaliação</a>
-                    <a href="{{ url_for('editar_perfil') }}" class="text-slate-700 hover:text-blue-700"> Editar perfil </a>
+                    <a href="{{ url_for('trabalhos.admin') }}" class="text-slate-700 hover:text-blue-700">Painel de avaliação</a>
+                    <a href="{{ url_for('usuarios.editar_perfil') }}" class="text-slate-700 hover:text-blue-700"> Editar perfil </a>
                     <span class="hidden sm:inline text-slate-500">{{ current_user.nome }}</span>
-                    <form action="{{ url_for('logout') }}" method="post">
+                    <form action="{{ url_for('usuarios.logout') }}" method="post">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <button class="text-slate-700 hover:text-red-700" type="submit">Sair</button>
                     </form>
                 {% else %}
-                    <a href="{{ url_for('login') }}" class="text-slate-700 hover:text-blue-700">Entrar</a>
-                    <a href="{{ url_for('cadastro') }}" class="text-slate-700 hover:text-blue-700">Criar conta</a>
+                    <a href="{{ url_for('usuarios.login') }}" class="text-slate-700 hover:text-blue-700">Entrar</a>
+                    <a href="{{ url_for('usuarios.cadastro') }}" class="text-slate-700 hover:text-blue-700">Criar conta</a>
                 {% endif %}
             </div>
         </nav>
