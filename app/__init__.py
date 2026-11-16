@@ -1,20 +1,15 @@
-import os
-import hmac
-import re
-from functools import wraps
+import secrets
 from dotenv import load_dotenv
 
 load_dotenv()
 
-from flask import Flask, g, render_template, request, redirect, url_for, flash, session, abort
+from flask import Flask, g, render_template, session
 from sqlalchemy import inspect, text
-from werkzeug.security import check_password_hash, generate_password_hash
 from config import db, Config
 from app.usuarios import bp as usuarios_bp
 from app.usuarios.models import Usuario
 from app.trabalhos import bp as trabalhos_bp
 from app.trabalhos.models import Trabalho
-from app.utils import login_required, valid_csrf_token
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -42,7 +37,6 @@ def load_logged_in_user():
 def inject_template_helpers():
     def csrf_token():
         if "_csrf_token" not in session:
-            import secrets
             session["_csrf_token"] = secrets.token_urlsafe(32)
         return session["_csrf_token"]
 

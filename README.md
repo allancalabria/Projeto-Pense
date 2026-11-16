@@ -74,32 +74,43 @@ A aplicação oferece um ambiente intuitivo para que autores e estudantes submet
 
 ```text
 Projeto-Pense/
-├── models/
-│   ├── __init__.py        # Exportação dos modelos
-│   ├── Trabalho.py        # Modelo SQLAlchemy da entidade Trabalho
-│   └── Usuario.py         # Modelo SQLAlchemy da conta de usuário
-├── static/
-│   ├── css/
-│   │   └── style.css      # Estilização complementar e variáveis visuais
-│   ├── img/
-│   │   └── sprites/       # Spritesheets e imagens pixel art
-│   └── js/
-│       ├── game/          # Módulos do mini-game (Plane, Bomb, Target, Game, etc.)
-│       └── game.js
-├── templates/
-│   ├── base.html          # Template base com navbar, alertas e background
-│   ├── dashboard.html     # Página inicial com cards dos trabalhos
-│   ├── form.html          # Página de submissão de trabalho
-│   ├── cadastro.html      # Cadastro de usuários
-│   ├── login.html         # Autenticação
-│   └── admin.html         # Painel de avaliação
-├── instance/              # Banco SQLite local (criado automaticamente)
-├── .env.example           # Modelo de variáveis de ambiente
-├── .gitignore             # Arquivos ignorados pelo controle de versão
-├── app.py                 # Ponto de entrada da aplicação e definição de rotas
-├── config.py              # Configuração do banco de dados e chave de sessão
-├── requirements.txt       # Dependências Python do projeto
-└── tailwind.config.js     # Configuração de temas do Tailwind
+├── app/
+│   ├── static/
+│   │   ├── css/
+│   │   │   └── style.css      # Estilização complementar e variáveis visuais
+│   │   ├── img/
+│   │   │   └── sprites/       # Spritesheets e imagens pixel art
+│   │   └── js/
+│   │       ├── game/          # Módulos do mini-game (Plane, Bomb, Target, Game, etc.)
+│   │       └── game.js
+│   ├── templates/
+│   │   ├── base.html          # Template base com navbar, alertas e background
+│   │   ├── 404.html           # Página de erro 404
+│   │   └── 500.html           # Página de erro 500
+│   ├── trabalhos/             # Feature: Submissão, listagem e avaliação de trabalhos
+│   │   ├── templates/
+│   │   │   ├── admin.html     # Painel de avaliação
+│   │   │   ├── dashboard.html # Página inicial com cards dos trabalhos
+│   │   │   └── form.html      # Página de submissão de trabalho
+│   │   ├── __init__.py        # Blueprint de trabalhos
+│   │   ├── models.py          # Modelo SQLAlchemy da entidade Trabalho
+│   │   └── routes.py          # Rotas de trabalhos e painel de avaliação
+│   ├── usuarios/              # Feature: Autenticação, cadastro e perfil
+│   │   ├── templates/
+│   │   │   ├── cadastro.html       # Cadastro de usuários
+│   │   │   ├── editar_usuario.html # Edição de perfil
+│   │   │   └── login.html          # Autenticação
+│   │   ├── __init__.py        # Blueprint de usuários
+│   │   ├── models.py          # Modelo SQLAlchemy da conta de usuário
+│   │   └── routes.py          # Rotas de cadastro, login, logout e perfil
+│   ├── __init__.py            # Inicialização da aplicação, DB, hooks e registro de blueprints
+│   └── utils.py               # Helpers e decorators compartilhados (CSRF, login_required)
+├── instance/                  # Banco SQLite local (criado automaticamente)
+├── .env.example               # Modelo de variáveis de ambiente
+├── .gitignore                 # Arquivos ignorados pelo controle de versão
+├── config.py                  # Configuração do banco de dados e chave de sessão
+├── requirements.txt           # Dependências Python do projeto
+└── run.py                     # Ponto de entrada para execução local
 ```
 
 ---
@@ -153,7 +164,7 @@ Projeto-Pense/
 5. **Inicie a aplicação:**
 
    ```bash
-   python app.py
+   python run.py
    ```
 6. **Acesse no navegador:**
    Abra [http://localhost:5000](http://localhost:5000)
