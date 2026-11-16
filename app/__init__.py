@@ -10,7 +10,8 @@ from flask import Flask, g, render_template, request, redirect, url_for, flash, 
 from sqlalchemy import inspect, text
 from werkzeug.security import check_password_hash, generate_password_hash
 from config import db, Config
-from models import Trabalho, Usuario
+from app.models import Usuario
+from app.trabalhos import bp as trabalhos_bp
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -25,6 +26,7 @@ with app.app_context():
         if "usuario_id" not in columns:
             connection.execute(text("ALTER TABLE trabalho ADD COLUMN usuario_id INTEGER REFERENCES usuarios(id)"))
 
+app.register_blueprint(trabalhos_bp)
 
 @app.before_request
 def load_logged_in_user():
@@ -57,12 +59,6 @@ def login_required(view):
             return redirect(url_for("login"))
         return view(*args, **kwargs)
     return wrapped_view
-
-# Rota do Dashboard (Página Inicial)
-@app.route('/')
-def dashboard():
-    trabalhos = Trabalho.query.order_by(Trabalho.id.desc()).all()
-    return render_template('dashboard.html', trabalhos=trabalhos)
 
 
 @app.route('/cadastro', methods=['GET', 'POST'])
@@ -129,7 +125,7 @@ def login():
         session.clear()
         session['usuario_id'] = usuario.id
         flash(f'Bem-vindo(a), {usuario.nome}!', 'success')
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('trabalhos.dashboard'))
 
     return render_template('login.html')
 
@@ -141,7 +137,7 @@ def logout():
         abort(400)
     session.clear()
     flash('Você saiu da sua conta.', 'success')
-    return redirect(url_for('dashboard'))
+    return redirect(url_for('trabalhos.dashboard'))
 
 
 # Rota para editar dados do Usuário
@@ -206,7 +202,7 @@ def editar_perfil():
             db.session.commit()
 
             flash('Seus dados foram atualizados com sucesso!', 'success')
-            return redirect(url_for('dashboard'))
+            return redirect(url_for('trabalhos.dashboard'))
 
         except Exception as e:
             db.session.rollback()
@@ -257,7 +253,7 @@ def form():
             db.session.add(novo_trabalho)
             db.session.commit()
             flash("Submissão enviada com sucesso!", "success")
-            return redirect(url_for('dashboard'))
+            return redirect(url_for('trabalhos.dashboard'))
         except Exception as e:
             db.session.rollback()
             app.logger.error(f"Erro ao cadastrar o trabalho: {e}", exc_info=True)
@@ -301,8 +297,3 @@ def erro_interno_servidor(error):
     db.session.rollback()
     app.logger.error('Erro interno do servidor: %s', error)
     return render_template('500.html'), 500
-
-
-
-if __name__ == '__main__':
-    app.run(debug=True, port=5000)
