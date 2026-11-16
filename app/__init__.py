@@ -206,33 +206,6 @@ def editar_perfil():
     return render_template('editar_usuario.html', dados=None)
 
 
-
-
-
-@app.get('/admin')
-@login_required
-def admin():
-    trabalhos = Trabalho.query.order_by(Trabalho.id.desc()).all()
-    return render_template('admin.html', trabalhos=trabalhos)
-
-
-@app.post('/admin/<int:trabalho_id>/status')
-@login_required
-def atualizar_status(trabalho_id):
-    if not valid_csrf_token():
-        abort(400)
-    trabalho = db.get_or_404(Trabalho, trabalho_id)
-    novo_status = request.form.get('status')
-    if novo_status not in {'Pendente', 'Aprovado', 'Reprovado'}:
-        flash('Status inválido.', 'danger')
-        return redirect(url_for('admin'))
-
-    trabalho.status = novo_status
-    db.session.commit()
-    flash('Status do trabalho atualizado.', 'success')
-    return redirect(url_for('admin'))
-
-
 @app.errorhandler(404)
 def pagina_nao_encontrada(error):
     return render_template('404.html'), 404

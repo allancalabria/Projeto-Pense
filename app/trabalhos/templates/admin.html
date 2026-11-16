@@ -44,7 +44,7 @@
                                     {% else %}bg-amber-100 text-amber-900{% endif %}">{{ trabalho.status }}</span>
                             </td>
                             <td class="px-4 py-4">
-                                <form action="{{ url_for('atualizar_status', trabalho_id=trabalho.id) }}" method="post" class="flex items-center gap-2">
+                                <form action="{{ url_for('trabalhos.atualizar_status', trabalho_id=trabalho.id) }}" method="post" class="flex items-center gap-2">
                                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                     <select name="status" aria-label="Status de {{ trabalho.titulo }}" class="min-w-32 rounded-md border border-slate-300 bg-white px-2 py-2">
                                         {% for status in ['Pendente', 'Aprovado', 'Reprovado'] %}
