@@ -14,6 +14,6 @@ def login_required(view):
     def wrapped_view(*args, **kwargs):
         if g.current_user is None:
             flash("Faça login para continuar.", "warning")
-            return redirect(url_for("login"))
+            return redirect(url_for("usuarios.login"))
         return view(*args, **kwargs)
     return wrapped_view

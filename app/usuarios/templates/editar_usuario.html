@@ -7,7 +7,7 @@
         <h1 class="text-2xl font-semibold text-slate-950 mt-2">Editar perfil</h1>
         <p class="text-sm text-slate-600 mt-1">Atualize suas informações cadastrais.</p>
 
-        <form action="{{ url_for('editar_perfil') }}" method="post" class="mt-6 flex flex-col gap-4">
+        <form action="{{ url_for('usuarios.editar_perfil') }}" method="post" class="mt-6 flex flex-col gap-4">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <label class="flex flex-col gap-1 text-sm font-medium text-slate-800">Nome completo
                 <input name="nome" type="text" maxlength="160" value="{{ dados.nome if dados else current_user.nome }}" autocomplete="name" required class="rounded-md border border-slate-300 px-3 py-2.5 font-normal">
